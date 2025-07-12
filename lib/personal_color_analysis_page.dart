@@ -17,9 +17,11 @@ class _PersonalColorAnalysisPageState extends State<PersonalColorAnalysisPage> {
   File? _imageFile;
   bool _isLoading = false;
 
+  final String geminiApiKey = 'AIzaSyDkVgKEu7J_cTfN8S_C7pd-cJjS7c8N_vM'; // ⚠️ Replace with your real key
+
   Future<void> _pickImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
@@ -39,19 +41,9 @@ class _PersonalColorAnalysisPageState extends State<PersonalColorAnalysisPage> {
       _isLoading = true;
     });
 
-    // **GEMINI API INTEGRATION POINT**
-    // This is where you call your backend service, which in turn calls the Gemini API.
-    // You should NOT call the Gemini API directly from the app.
-
-    // 1. Define the URL for your backend function (e.g., a Supabase Edge Function)
-    //    Replace this with your actual function URL.
-    final url = Uri.parse('YOUR_BACKEND_FUNCTION_URL_HERE');
-
-    // 2. Encode the image to base64
     final bytes = await _imageFile!.readAsBytes();
     final imageBase64 = base64Encode(bytes);
 
-    // 3. Construct the prompt for Gemini
     const prompt = """
       Analyze the provided image to determine the user's personal color analysis.
       Provide the output in a structured JSON format.
@@ -69,33 +61,74 @@ class _PersonalColorAnalysisPageState extends State<PersonalColorAnalysisPage> {
       - "colors_to_avoid": An array of 3 hex color strings.
     """;
 
+    final uri = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$geminiApiKey');
+
     try {
-      // 4. Make the request to your backend
       final response = await http.post(
-        url,
+        uri,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'prompt': prompt,
-          'image': imageBase64,
+          "contents": [
+            {
+              "parts": [
+                {"text": prompt},
+                {
+                  "inlineData": {
+                    "mimeType": "image/jpeg",
+                    "data": imageBase64,
+                  }
+                }
+              ]
+            }
+          ]
         }),
       );
 
       if (response.statusCode == 200) {
-        // 5. Parse the response and navigate to the results page
-        final analysisData = jsonDecode(response.body);
+        final decoded = jsonDecode(response.body);
+        String responseText = decoded['candidates'][0]['content']['parts'][0]['text'];
+
+// Clean the response if it's wrapped in Markdown-style code block
+        responseText = responseText.trim();
+        if (responseText.startsWith("```json")) {
+          responseText = responseText.replaceFirst("```json", "");
+        }
+        if (responseText.endsWith("```")) {
+          responseText = responseText.substring(0, responseText.length - 3);
+        }
+
+        try {
+          final Map<String, dynamic> analysisData = jsonDecode(responseText);
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ColorAnalysisResultsPage(
+                imageFile: _imageFile!,
+                analysisData: analysisData,
+              ),
+            ),
+          );
+        } catch (e) {
+          _showError("Invalid JSON format received: $responseText");
+        }
+
+        // Parse stringified JSON in response
+        final Map<String, dynamic> analysisData = jsonDecode(responseText);
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ColorAnalysisResultsPage(
               imageFile: _imageFile!,
-              // You would pass the real analysisData here
+              analysisData: analysisData,
             ),
           ),
         );
       } else {
-        _showError('Failed to analyze image. Please try again.');
+        _showError('Failed to analyze image: ${response.body}');
       }
     } catch (e) {
-      _showError('An error occurred: ${e.toString()}');
+      _showError('An error occurred: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -147,14 +180,14 @@ class _PersonalColorAnalysisPageState extends State<PersonalColorAnalysisPage> {
                 ),
                 child: _imageFile != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          _imageFile!,
-                          fit: BoxFit.cover,
-                        ),
-                      )
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    _imageFile!,
+                    fit: BoxFit.cover,
+                  ),
+                )
                     : const Icon(Icons.photo_camera_back_outlined,
-                        size: 80, color: Colors.grey),
+                    size: 80, color: Colors.grey),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
@@ -163,7 +196,7 @@ class _PersonalColorAnalysisPageState extends State<PersonalColorAnalysisPage> {
                 label: const Text('Select Photo'),
                 style: ElevatedButton.styleFrom(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
               ),
               const SizedBox(height: 40),

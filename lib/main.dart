@@ -5,7 +5,7 @@ import 'package:rewear/supabase_client.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
   await initializeSupabase();
   runApp(const MyApp());
 }

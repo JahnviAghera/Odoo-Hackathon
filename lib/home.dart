@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rewear/auth.dart';
 import 'package:rewear/features/browse/pages/browse_page.dart';
+import 'package:rewear/features/style_helper/pages/style_helper_page.dart';
 import 'package:rewear/features/upload/pages/upload_clothing_page.dart';
 import 'package:rewear/models/clothing_item.dart';
-import 'package:rewear/personal_color_analysis_page.dart';
 import 'package:rewear/supabase_client.dart';
 import 'package:rewear/user_profile.dart';
 
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const PersonalColorAnalysisPage(),
+                                      const StyleHelperPage(),
                                 ),
                               );
                             }),
