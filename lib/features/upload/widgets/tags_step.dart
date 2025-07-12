@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TagsStep extends StatefulWidget {
-  final VoidCallback onNext;
+  final Function(List<String>) onNext;
 
   const TagsStep({super.key, required this.onNext});
 
@@ -67,7 +67,7 @@ class _TagsStepState extends State<TagsStep> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: widget.onNext,
+              onPressed: () => widget.onNext(_selectedTags),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF004CFF),
                 foregroundColor: Colors.white,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rewear/features/upload/models/clothing_item.dart';
 import 'package:rewear/features/upload/widgets/attributes_step.dart';
 import 'package:rewear/features/upload/widgets/details_step.dart';
 import 'package:rewear/features/upload/widgets/image_upload_step.dart';
 import 'package:rewear/features/upload/widgets/tags_step.dart';
+import 'package:rewear/supabase_client.dart';
 
 class UploadClothingPage extends StatefulWidget {
   const UploadClothingPage({super.key});
@@ -14,8 +16,37 @@ class UploadClothingPage extends StatefulWidget {
 class _UploadClothingPageState extends State<UploadClothingPage> {
   int _currentStep = 0;
   final PageController _pageController = PageController();
+  late ClothingItem _clothingItem;
 
-  void _nextStep(List<String> imageUrls) {
+  @override
+  void initState() {
+    super.initState();
+    _clothingItem = ClothingItem(
+      imageUrls: [],
+      title: '',
+      description: '',
+      category: '',
+      size: '',
+      condition: '',
+      tags: [],
+    );
+  }
+
+  void _nextStep(dynamic data) {
+    if (_currentStep == 0) {
+      _clothingItem = _clothingItem.copyWith(imageUrls: data as List<String>);
+    } else if (_currentStep == 1) {
+      _clothingItem = _clothingItem.copyWith(
+          title: data['title'], description: data['description']);
+    } else if (_currentStep == 2) {
+      _clothingItem = _clothingItem.copyWith(
+          category: data['category'],
+          size: data['size'],
+          condition: data['condition']);
+    } else if (_currentStep == 3) {
+      _clothingItem = _clothingItem.copyWith(tags: data as List<String>);
+    }
+
     if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -74,9 +105,9 @@ class _UploadClothingPageState extends State<UploadClothingPage> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ImageUploadStep(onNext: _nextStep),
-                DetailsStep(onNext: () => _nextStep([])),
-                AttributesStep(onNext: () => _nextStep([])),
-                TagsStep(onNext: () => _nextStep([])),
+                DetailsStep(onNext: (data) => _nextStep(data)),
+                AttributesStep(onNext: (data) => _nextStep(data)),
+                TagsStep(onNext: (data) => _nextStep(data)),
                 _buildSubmitStep(),
               ],
             ),
@@ -108,16 +139,36 @@ class _UploadClothingPageState extends State<UploadClothingPage> {
             ),
             const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () {
-                // **INTEGRATION POINT**
-                // This is where you would collect all the data from the previous
-                // steps and send it to your Supabase backend.
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Item submitted successfully!'),
-                      backgroundColor: Colors.green),
-                );
+              onPressed: () async {
+                try {
+                  final userId = supabase.auth.currentUser!.id;
+                  await supabase.from('items').insert({
+                    'title': _clothingItem.title,
+                    'description': _clothingItem.description,
+                    'category': _clothingItem.category,
+                    'size': _clothingItem.size,
+                    'condition': _clothingItem.condition,
+                    'tags': _clothingItem.tags,
+                    'image_urls': _clothingItem.imageUrls,
+                    'user_id': userId,
+                  });
+
+                  // Award points to the user
+                  await supabase.functions.invoke('award-points', body: {'userId': userId, 'points': 10});
+
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Item submitted successfully! You earned 10 points.'),
+                        backgroundColor: Colors.green),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Error submitting item: $e'),
+                        backgroundColor: Colors.red),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF004CFF),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AttributesStep extends StatefulWidget {
-  final VoidCallback onNext;
+  final Function(Map<String, String>) onNext;
 
   const AttributesStep({super.key, required this.onNext});
 
@@ -50,7 +50,13 @@ class _AttributesStepState extends State<AttributesStep> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: widget.onNext,
+              onPressed: () {
+                widget.onNext({
+                  'category': _selectedCategory ?? '',
+                  'size': _selectedSize ?? '',
+                  'condition': _selectedCondition ?? '',
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF004CFF),
                 foregroundColor: Colors.white,

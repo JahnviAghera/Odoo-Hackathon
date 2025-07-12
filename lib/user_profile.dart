@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rewear/features/rewards/pages/redeem_page.dart';
 
 class UserProfilePage extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -47,6 +48,16 @@ class UserProfilePage extends StatelessWidget {
                 title: const Text('Points'),
                 subtitle: Text(userData['points']?.toString() ?? '0'),
               ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RedeemPage()),
+                );
+              },
+              child: const Text('Redeem Rewards'),
             ),
           ],
         ),

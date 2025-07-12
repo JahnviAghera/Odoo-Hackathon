@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
-class DetailsStep extends StatelessWidget {
-  final VoidCallback onNext;
+class DetailsStep extends StatefulWidget {
+  final Function(Map<String, String>) onNext;
 
   const DetailsStep({super.key, required this.onNext});
+
+  @override
+  State<DetailsStep> createState() => _DetailsStepState();
+}
+
+class _DetailsStepState extends State<DetailsStep> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +31,7 @@ class DetailsStep extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           TextFormField(
+            controller: _titleController,
             decoration: const InputDecoration(
               labelText: 'Title',
               border: OutlineInputBorder(),
@@ -30,6 +39,7 @@ class DetailsStep extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           TextFormField(
+            controller: _descriptionController,
             decoration: const InputDecoration(
               labelText: 'Description',
               border: OutlineInputBorder(),
@@ -40,7 +50,12 @@ class DetailsStep extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: onNext,
+              onPressed: () {
+                widget.onNext({
+                  'title': _titleController.text,
+                  'description': _descriptionController.text,
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF004CFF),
                 foregroundColor: Colors.white,
