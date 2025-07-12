@@ -105,7 +105,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: ElevatedButton(
                   onPressed: handleAuth,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4CFF00),
+                    backgroundColor: const Color(0xFF004CFF),
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -128,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         ? "Don't have an account? Register"
                         : "Already registered? Login",
                     style: const TextStyle(
-                      color: Color(0xFF4CFF00),
+                      color: Color(0xFF004CFF),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
