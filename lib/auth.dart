@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rewear/home.dart';
+import 'package:rewear/supabase_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -9,39 +11,86 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool isLogin = true;
+  bool _isLogin = true;
+  bool _isLoading = false;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
-
-  void toggleFormMode() {
-    setState(() {
-      isLogin = !isLogin;
+  @override
+  void initState() {
+    super.initState();
+    supabase.auth.onAuthStateChange.listen((data) {
+      final AuthChangeEvent event = data.event;
+      if (event == AuthChangeEvent.signedIn) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
     });
   }
 
-  void handleAuth() {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+  Future<void> _handleAuth() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-    if (!isLogin && password != _confirmPasswordController.text.trim()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match")),
-      );
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (!_isLogin && password != _confirmPasswordController.text.trim()) {
+      _showErrorSnackBar("Passwords do not match");
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 
-    // Replace with backend logic
-    String mode = isLogin ? "Login" : "Register";
+    try {
+      if (_isLogin) {
+        await supabase.auth.signInWithPassword(
+          email: email,
+          password: password,
+        );
+      } else {
+        await supabase.auth.signUp(
+          email: email,
+          password: password,
+        );
+        _showErrorSnackBar("Please check your email for verification.");
+      }
+    } on AuthException catch (error) {
+      _showErrorSnackBar(error.message);
+    } catch (error) {
+      _showErrorSnackBar("An unexpected error occurred.");
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("$mode Successful for $email")),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
     );
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
-    );
+  }
+
+  void _toggleFormMode() {
+    setState(() {
+      _isLogin = !_isLogin;
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,10 +103,11 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-              Image.asset('assets/images/logo_blue_large.png',height: 60,width: 60),
+              Image.asset('assets/images/logo_blue_large.png',
+                  height: 60, width: 60),
               const SizedBox(height: 10),
               Text(
-                isLogin ? 'Welcome Back 👋' : 'Join ReWear 👗',
+                _isLogin ? 'Welcome Back 👋' : 'Join ReWear 👗',
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -66,7 +116,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                isLogin
+                _isLogin
                     ? 'Login to continue your journey.'
                     : 'Create an account to begin.',
                 style: const TextStyle(
@@ -75,7 +125,6 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -84,7 +133,6 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -94,8 +142,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              if (!isLogin)
+              if (!_isLogin)
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: true,
@@ -104,13 +151,11 @@ class _AuthScreenState extends State<AuthScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-
               const SizedBox(height: 30),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: handleAuth,
+                  onPressed: _isLoading ? null : _handleAuth,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF004CFF),
                     foregroundColor: Colors.white,
@@ -119,19 +164,20 @@ class _AuthScreenState extends State<AuthScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    isLogin ? 'Login' : 'Register',
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          _isLogin ? 'Login' : 'Register',
+                          style: const TextStyle(fontSize: 16),
+                        ),
                 ),
               ),
               const SizedBox(height: 12),
-
               Center(
                 child: TextButton(
-                  onPressed: toggleFormMode,
+                  onPressed: _toggleFormMode,
                   child: Text(
-                    isLogin
+                    _isLogin
                         ? "Don't have an account? Register"
                         : "Already registered? Login",
                     style: const TextStyle(
@@ -148,3 +194,4 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 }
+
