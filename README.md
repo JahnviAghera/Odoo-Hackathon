@@ -7,6 +7,10 @@ ReWear is a cross-platform Flutter application that promotes sustainable fashion
 
 ---
 
+[![Watch the video](https://github.com/JahnviAghera/Odoo-Hackathon/blob/024cf63d075a6e0294f40efbd3bfa1ca9f84f369/Poster.png?raw=true)](https://www.youtube.com/watch?v=w0-N4u-KD4g)
+
+---
+
 ## Figma Design  
 [Click here to view the Figma Design](https://www.figma.com/design/o2zAh6YwHHJsjGRa7a9N0P/Untitled?t=U34MP37HOgPu9FGG-1)
 
@@ -108,12 +112,6 @@ Includes a `redeem_reward` stored procedure for point-based reward redemption.
 ## Team Collaboration
 
 All team members contributed to design, development, integration, and testing of the application. Work was divided by features, and collaboration was handled using Git.
-
----
-[![Watch the video](https://img.youtube.com/vi/w0-N4u-KD4g/0.jpg)](https://www.youtube.com/watch?v=w0-N4u-KD4g)
-
-
-*Add your preferred open-source license here (e.g., MIT, Apache 2.0)*
 
 ---
 
