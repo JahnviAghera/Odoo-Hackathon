@@ -1,3 +1,4 @@
+![Alt text](https://github.com/JahnviAghera/Odoo-Hackathon/blob/89622941f168e3666a01fcf4d1554793c2384fc5/logo.png)
 # Rewear Project
 
 ReWear is a cross-platform Flutter application designed to facilitate clothing exchange and styling assistance. Built with Flutter, it can be deployed on multiple platforms including Android, iOS, web, and desktop, providing a consistent user experience across devices. It leverages Supabase for backend services, providing user authentication, data storage, and real-time updates.
