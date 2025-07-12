@@ -26,6 +26,7 @@ ReWear is a cross-platform Flutter application that promotes sustainable fashion
 - Get AI-powered style recommendations
 
 ### Admin Panel  
+[Admin Panel Link](https://rewearadmin.netlify.app/)
 - Approve or reject item listings  
 - Remove spam or inappropriate content  
 - View logs of admin actions
