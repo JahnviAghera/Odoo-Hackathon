@@ -57,6 +57,11 @@ class ItemCard extends StatelessWidget {
                     style: TextStyle(color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 4),
+                  Text(
+                    'Points: ${item.price ?? 'N/A'}',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 4),
                   Wrap(
                     spacing: 4.0,
                     runSpacing: 4.0,
