@@ -13,6 +13,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   bool _isLogin = true;
   bool _isLoading = false;
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -20,9 +21,12 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
+    print("[DEBUG] AuthScreen initialized.");
     supabase.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
+      print("[DEBUG] Auth event detected: $event");
       if (event == AuthChangeEvent.signedIn) {
+        print("[DEBUG] User signed in. Navigating to HomeScreen.");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
@@ -35,8 +39,17 @@ class _AuthScreenState extends State<AuthScreen> {
       _isLoading = true;
     });
 
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+
+    print("[DEBUG] Auth mode: ${_isLogin ? "Login" : "Register"}");
+    print("[DEBUG] Email: $email");
+    print("[DEBUG] Password: ${'*' * password.length}");
+    if (!_isLogin) {
+      print("[DEBUG] Confirm Password: ${'*' * _confirmPasswordController.text.trim().length}");
+      print("[DEBUG] Name: $name");
+    }
 
     if (!_isLogin && password != _confirmPasswordController.text.trim()) {
       _showErrorSnackBar("Passwords do not match");
@@ -48,20 +61,27 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       if (_isLogin) {
+        print("[DEBUG] Attempting login...");
         await supabase.auth.signInWithPassword(
           email: email,
           password: password,
         );
+        print("[DEBUG] Login successful.");
       } else {
-        await supabase.auth.signUp(
+        print("[DEBUG] Attempting registration...");
+        final response = await supabase.auth.signUp(
           email: email,
           password: password,
+          data: {'full_name': name},
         );
+        print("[DEBUG] Registration result: ${response.user?.id}");
         _showErrorSnackBar("Please check your email for verification.");
       }
     } on AuthException catch (error) {
+      print("[DEBUG] AuthException: ${error.message}");
       _showErrorSnackBar(error.message);
     } catch (error) {
+      print("[DEBUG] Unexpected error: $error");
       _showErrorSnackBar("An unexpected error occurred.");
     }
 
@@ -69,7 +89,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _isLoading = false;
     });
   }
-
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -82,11 +101,13 @@ class _AuthScreenState extends State<AuthScreen> {
   void _toggleFormMode() {
     setState(() {
       _isLogin = !_isLogin;
+      print("[DEBUG] Form mode toggled. New mode: ${_isLogin ? "Login" : "Register"}");
     });
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -96,6 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -125,6 +147,15 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(height: 40),
+              if (!_isLogin)
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              if (!_isLogin) const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(

@@ -1,0 +1,4 @@
+id,user_id,title,description,category,type,size,condition,tags,is_available,listed_at
+"4a4b4c4d-4e4f-4g4h-4i4j-4k4l4m4n4o4p","8a8b8c8d-8e8f-8g8h-8i8j-8k8l8m8n8o8p","Vintage Denim Jacket","A classic 80s denim jacket, perfectly worn in.","Tops","Casual","M","Like New","{""vintage"",""denim"",""jacket""}",true,"2025-07-11 09:00:00"
+"5b5c5d5e-5f5g-5h5i-5j5k-5l5m5n5o5p5q","9b9c9d9e-9f9g-9h9i-9j9k-9l9m9n9o9p9q","Floral Summer Dress","A light and airy summer dress with a floral pattern.","Dresses","Casual","S","New","{""summer"",""floral"",""dress""}",true,"2025-07-12 10:00:00"
+"6c6d6e6f-6g6h-6i6j-6k6l-6m6n6o6p6q6r","8a8b8c8d-8e8f-8g8h-8i8j-8k8l8m8n8o8p","Leather Ankle Boots","Stylish black leather boots, great for any season.","Shoes","Formal","8","Good","{""leather"",""boots"",""black""}",true,"2025-07-12 11:00:00"

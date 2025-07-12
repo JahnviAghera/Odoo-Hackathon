@@ -1,0 +1,4 @@
+id,name,email,profile_picture,location,points,is_admin,created_at
+"8a8b8c8d-8e8f-8g8h-8i8j-8k8l8m8n8o8p","Alice Johnson","alice.j@example.com","https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D","New York, USA",150,false,"2025-07-10 10:00:00"
+"9b9c9d9e-9f9g-9h9i-9j9k-9l9m9n9o9p9q","Bob Williams","bob.w@example.com","https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D","London, UK",75,false,"2025-07-11 11:30:00"
+"1a2b3c4d-5e6f-7g8h-9i1j-2k3l4m5n6o7p","Charlie Brown","charlie.b@example.com",,"Los Angeles, USA",200,true,"2025-07-12 14:00:00"
