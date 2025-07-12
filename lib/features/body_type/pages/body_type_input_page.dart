@@ -27,15 +27,16 @@ class _BodyTypeInputPageState extends State<BodyTypeInputPage> {
       _isLoading = true;
     });
 
-    // **GEMINI API INTEGRATION POINT**
-    final url = Uri.parse('YOUR_BACKEND_FUNCTION_URL_HERE');
+    final String geminiApiKey = 'AIzaSyDkVgKEu7J_cTfN8S_C7pd-cJjS7c8N_vM'; // ⚠️ Replace with your real key
+    final url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$geminiApiKey');
     const prompt = """
       Analyze the provided body measurements to determine the user's body shape.
       Provide the output in a structured JSON format.
 
       The JSON object should include the following keys:
-      - "body_type": A string with the determined body shape (e.g., "Rectangle", "Pear").
-      - "clothing_suggestions": An array of 5 strings with clothing recommendations.
+      - "body_type": A string with the determined body shape (e.g., "Rectangle", "Pear", "Hourglass", "Inverted Triangle").
+      - "clothing_suggestions": An array of 5 strings with clothing recommendations tailored to the identified body type.
     """;
 
     try {
@@ -43,18 +44,44 @@ class _BodyTypeInputPageState extends State<BodyTypeInputPage> {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'prompt': prompt,
-          'measurements': {
-            'height': _heightController.text,
-            'shoulder': _shoulderController.text,
-            'waist': _waistController.text,
-            'hips': _hipsController.text,
-          }
+          "contents": [
+            {
+              "parts": [
+                {"text": """$prompt
+
+                Measurements:
+                Height: ${_heightController.text} cm
+                Shoulder Width: ${_shoulderController.text} cm
+                Waist: ${_waistController.text} cm
+                Hips: ${_hipsController.text} cm
+                """}
+              ]
+            }
+          ]
         }),
       );
 
       if (response.statusCode == 200) {
-        final analysisData = jsonDecode(response.body);
+        final decoded = jsonDecode(response.body);
+        String responseText = decoded['candidates'][0]['content']['parts'][0]['text'];
+
+        // Clean the response if it's wrapped in Markdown-style code block
+        responseText = responseText.trim();
+        if (responseText.startsWith("```json")) {
+          responseText = responseText.replaceFirst("```json", "");
+        }
+        if (responseText.endsWith("```")) {
+          responseText = responseText.substring(0, responseText.length - 3);
+        }
+
+        Map<String, dynamic> analysisData;
+        try {
+          analysisData = jsonDecode(responseText);
+        } catch (e) {
+          _showError("Invalid JSON format received: $responseText");
+          return;
+        }
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) =>
@@ -62,7 +89,7 @@ class _BodyTypeInputPageState extends State<BodyTypeInputPage> {
           ),
         );
       } else {
-        _showError('Failed to analyze body type. Please try again.');
+        _showError('Failed to analyze body type: ${response.body}');
       }
     } catch (e) {
       _showError('An error occurred: ${e.toString()}');

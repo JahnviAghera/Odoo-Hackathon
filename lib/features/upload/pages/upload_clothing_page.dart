@@ -15,7 +15,7 @@ class _UploadClothingPageState extends State<UploadClothingPage> {
   int _currentStep = 0;
   final PageController _pageController = PageController();
 
-  void _nextStep() {
+  void _nextStep(List<String> imageUrls) {
     if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -74,9 +74,9 @@ class _UploadClothingPageState extends State<UploadClothingPage> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ImageUploadStep(onNext: _nextStep),
-                DetailsStep(onNext: _nextStep),
-                AttributesStep(onNext: _nextStep),
-                TagsStep(onNext: _nextStep),
+                DetailsStep(onNext: () => _nextStep([])),
+                AttributesStep(onNext: () => _nextStep([])),
+                TagsStep(onNext: () => _nextStep([])),
                 _buildSubmitStep(),
               ],
             ),

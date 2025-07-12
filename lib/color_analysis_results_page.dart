@@ -22,14 +22,20 @@ class ColorAnalysisResultsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildHeader(analysisData['conclusion'] ?? 'Your Palette'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildHeader(analysisData['conclusion'] ?? 'Your Palette'),
+              ],
+            ),
             const SizedBox(height: 24),
             _buildAnalysisDetailSection(analysisData),
             const SizedBox(height: 24),
             _buildColorRecommendationsSection(analysisData),
-            const SizedBox(height: 24),
-            _buildFashionIllustrationsSection(),
+            // const SizedBox(height: 24),
+            // _buildFashionIllustrationsSection(),
           ],
         ),
       ),
@@ -77,11 +83,20 @@ class ColorAnalysisResultsPage extends StatelessWidget {
           const SizedBox(height: 16),
           ColorPaletteRow(
             title: 'Seasonal Palette',
-            colors: List<Color>.from(data['seasonal_palette'] ?? []),
+            colors: (data['seasonal_palette'] as List<dynamic>?)
+                    ?.map<Color>((colorString) => _colorFromString(colorString))
+                    .toList() ?? [],
           ),
         ],
       ),
     );
+  }
+
+  Color _colorFromString(String colorString) {
+    // Remove the leading # and parse as a hex integer
+    final hexColor = colorString.replaceAll("#", "");
+    final hexInt = int.parse('FF$hexColor', radix: 16);
+    return Color(hexInt);
   }
 
   Widget _buildColorRecommendationsSection(Map<String, dynamic> data) {
@@ -158,11 +173,20 @@ class ColorAnalysisResultsPage extends StatelessWidget {
   }
 
   Widget _buildPaletteRow(String title, dynamic colorList) {
+    List<dynamic> colors = [];
+    if (colorList is Map<String, dynamic>) {
+      colors = colorList.values.toList();
+    } else if (colorList is List<dynamic>) {
+      colors = colorList;
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ColorPaletteRow(
         title: title,
-        colors: List<Color>.from(colorList ?? []),
+        colors: colors
+            .map<Color>((colorString) => _colorFromString(colorString))
+            .toList(),
       ),
     );
   }

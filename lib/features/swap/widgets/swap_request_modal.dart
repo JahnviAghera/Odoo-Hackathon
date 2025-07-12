@@ -19,7 +19,7 @@ class _SwapRequestModalState extends State<SwapRequestModal> {
     final List<ClothingItem> userItems = [
       ClothingItem(id: '1', title: 'My Red T-Shirt', size: 'M'),
       ClothingItem(id: '2', title: 'My Blue Jeans', size: 'L'),
-    ];
+    ].toSet().toList();
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../supabase_client.dart';
 
 class ImageUploadStep extends StatefulWidget {
-  final VoidCallback onNext;
+  final Function(List<String>) onNext;
 
   const ImageUploadStep({super.key, required this.onNext});
 
@@ -12,7 +15,8 @@ class ImageUploadStep extends StatefulWidget {
 }
 
 class _ImageUploadStepState extends State<ImageUploadStep> {
-  final List<File> _images = [];
+  final List<Uint8List> _images = [];
+  final List<String> _imageUrls = [];
 
   Future<void> _pickImage() async {
     if (_images.length >= 4) {
@@ -21,11 +25,26 @@ class _ImageUploadStepState extends State<ImageUploadStep> {
       );
       return;
     }
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      final imageFile = File(pickedFile.path);
+      final bytes = await imageFile.readAsBytes();
+
+      final String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+      final String path = 'uploads/$imageName.png';
+
+      await supabase.storage.from('items').uploadBinary(
+        path,
+        bytes,
+        fileOptions: FileOptions(contentType: 'image/png'),
+      );
+
+      final imageUrl = supabase.storage.from('items').getPublicUrl(path);
+
       setState(() {
-        _images.add(File(pickedFile.path));
+        _images.add(bytes);
+        _imageUrls.add(imageUrl);
       });
     }
   }
@@ -71,7 +90,7 @@ class _ImageUploadStepState extends State<ImageUploadStep> {
                 }
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.file(_images[index], fit: BoxFit.cover),
+                  child: Image.memory(_images[index], fit: BoxFit.cover),
                 );
               },
             ),
@@ -80,7 +99,7 @@ class _ImageUploadStepState extends State<ImageUploadStep> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _images.isNotEmpty ? widget.onNext : null,
+              onPressed: _images.isNotEmpty ? () => widget.onNext(_imageUrls) : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF004CFF),
                 foregroundColor: Colors.white,

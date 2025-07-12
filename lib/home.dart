@@ -316,10 +316,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ),
           const SizedBox(height: 8),
-          Text(
-            item.title,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+         Row(
+           children: [
+             Text(
+               item.title,
+               style: const TextStyle(fontWeight: FontWeight.w600),
+             ),
+             Text(
+               item.price.toString(),
+               style: const TextStyle(fontWeight: FontWeight.w600),
+             ),
+           ],
+         ),
           const SizedBox(height: 4),
           Text(
             item.category ?? '',
@@ -374,8 +382,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 4),
-              Text(item.description ?? '',
-                  style: TextStyle(color: Colors.grey.shade600)),
+              SizedBox( // Added SizedBox
+                width: 250, // Specify a width
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.description ?? '',
+                        style: TextStyle(color: Colors.grey.shade600),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+
             ],
           )
         ],

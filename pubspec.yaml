@@ -37,6 +37,7 @@ dependencies:
   supabase_flutter: ^2.9.1
   flutter_dotenv: ^5.2.1
   image_picker: ^1.1.2
+  image_background_remover: ^1.0.0
 
 dev_dependencies:
   flutter_test:
