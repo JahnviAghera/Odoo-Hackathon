@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rewear/home.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -37,6 +38,10 @@ class _AuthScreenState extends State<AuthScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("$mode Successful for $email")),
     );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomeScreen()),
+    );
   }
 
   @override
@@ -49,6 +54,8 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
+              Image.asset('assets/images/logo_blue_large.png',height: 60,width: 60),
+              const SizedBox(height: 10),
               Text(
                 isLogin ? 'Welcome Back 👋' : 'Join ReWear 👗',
                 style: const TextStyle(
@@ -106,7 +113,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   onPressed: handleAuth,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF004CFF),
-                    foregroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
