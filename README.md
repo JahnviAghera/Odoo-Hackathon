@@ -110,7 +110,7 @@ Includes a `redeem_reward` stored procedure for point-based reward redemption.
 All team members contributed to design, development, integration, and testing of the application. Work was divided by features, and collaboration was handled using Git.
 
 ---
-[![Watch the video]]([https://youtu.be/vt5fpE0bzSY](https://youtu.be/w0-N4u-KD4g?si=D4Nro-tpsj2tDvFK))
+![Watch the video]](https://youtu.be/vt5fpE0bzSY](https://youtu.be/w0-N4u-KD4g?si=D4Nro-tpsj2tDvFK)
 
 
 *Add your preferred open-source license here (e.g., MIT, Apache 2.0)*
