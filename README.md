@@ -7,6 +7,10 @@ ReWear is a cross-platform Flutter application that promotes sustainable fashion
 
 ---
 
+<a href="https://www.youtube.com/watch?v=w0-N4u-KD4g" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="Watch the video on YouTube" width="100">
+</a>
+
 [![Watch the video](https://github.com/JahnviAghera/Odoo-Hackathon/blob/024cf63d075a6e0294f40efbd3bfa1ca9f84f369/Poster.png?raw=true)](https://www.youtube.com/watch?v=w0-N4u-KD4g)
 
 ---
@@ -112,6 +116,18 @@ Includes a `redeem_reward` stored procedure for point-based reward redemption.
 ## Team Collaboration
 
 All team members contributed to design, development, integration, and testing of the application. Work was divided by features, and collaboration was handled using Git.
+
+## 👨‍💻 Team 0334 – Team Members & Details
+
+| Name              | Email                          | Phone         |
+|-------------------|--------------------------------|----------------|
+| Ashutosh Kumar Singh | ashutoshhjp1067@gmail.com      | +91 90816 96945 |
+| Aditya Raj        | adivid198986@gmail.com         | +91 89693 57069 |
+| Jahnvi Aghera     | agherajahnvi@gmail.com         | +91 87994 48954 |
+| Mihir Mithani     | mihir.mithani29@gmail.com      | +91 99041 46370 |
+
+**Reviewer:** Aman Patel (ampa)
+
 
 ---
 
